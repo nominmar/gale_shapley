@@ -3,9 +3,11 @@
 #include <utility>
 #include <optional>
 #include <tuple>
+#include <algorithm>
+
 
 std::vector<std::string> gale_objects = {"a", "b", "c"};
-std::vector<std::vector<std::string>> gale_preferences = {{"f", "d", "e"}, {"f", "d", "e"}, {"f", "d", "e"}};
+std::vector<std::vector<std::string>> gale_preferences = {{"e", "d", "f"}, {"f", "d", "e"}, {"f", "d", "e"}};
 std::vector<bool> gale_matches = {false, false, false};
 
 std::vector<std::string> shapley_objects = {"f", "d", "e"};
@@ -82,9 +84,6 @@ void gale_shapley(int gale)
         std::string current_pref = gale_preferences[gale].front();
         int shapley = get_position(current_pref, shapley_objects);
         std::vector<std::string> shapley_preference_list = get_shapley_preferences(shapley);
-        for (std::string i : shapley_preference_list)
-            std::cout << i << ' ' << std::endl;
-
         std::string shapley_current_match = get_shapley_current_match(shapley);
         bool is_match = check_match(shapley_preference_list, gale_objects[gale], shapley_current_match);
         if (is_match == true)
@@ -114,9 +113,13 @@ void main()
             gale_shapley(i);
         }
     }
-    for (bool i : gale_matches)
-        std::cout << i << ' ' << std::endl;
+    std::vector<std::pair<std::string, std::string>> gale_shapley_pairs(shapley_matches.size());
 
-    for (std::string i : shapley_matches)
-        std::cout << i << ' ' << std::endl;
+    for (unsigned i = 0; i < gale_shapley_pairs.size(); i++)
+        gale_shapley_pairs[i] = std::make_pair(shapley_matches[i], shapley_objects[i]);
+
+
+    for (std::pair<std::string, std::string> i : gale_shapley_pairs) {
+        std::cout << i.first << '-' << i.second << std::endl;
+    }
 }
