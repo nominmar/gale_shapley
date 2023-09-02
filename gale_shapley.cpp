@@ -5,10 +5,10 @@
 #include <tuple>
 
 std::vector<std::string> gale_objects = {"a", "b", "c"};
-std::vector<std::vector<std::string>> gale_preferences = {{"c", "d", "e"}, {"c", "d", "e"}, {"c", "d", "e"}};
+std::vector<std::vector<std::string>> gale_preferences = {{"f", "d", "e"}, {"f", "d", "e"}, {"f", "d", "e"}};
 std::vector<bool> gale_matches = {false, false, false};
 
-std::vector<std::string> shapley_objects = {"c", "d", "e"};
+std::vector<std::string> shapley_objects = {"f", "d", "e"};
 std::vector<std::vector<std::string>> shapley_preferences = {{"a", "b", "c"}, {"a", "b", "c"}, {"a", "b", "c"}};
 std::vector<std::string> shapley_matches(3, std::string("UNINITIALIZED"));
 
@@ -79,11 +79,14 @@ void gale_shapley(int gale)
     }
     else
     {
-        std::string current_pref = gale_preferences[gale][0];
+        std::string current_pref = gale_preferences[gale].front();
         int shapley = get_position(current_pref, shapley_objects);
-        std::vector<std::string> shapley_current_pref = get_shapley_preferences(shapley);
+        std::vector<std::string> shapley_preference_list = get_shapley_preferences(shapley);
+        for (std::string i : shapley_preference_list)
+            std::cout << i << ' ' << std::endl;
+
         std::string shapley_current_match = get_shapley_current_match(shapley);
-        bool is_match = check_match(shapley_current_pref, gale_objects[gale], shapley_current_match);
+        bool is_match = check_match(shapley_preference_list, gale_objects[gale], shapley_current_match);
         if (is_match == true)
         {
             update_shapley_match(gale_objects[gale], shapley);
@@ -94,9 +97,26 @@ void gale_shapley(int gale)
                 update_gale_match(false, prev_gale);
             }
         }
+        else
+        {
+            remove_preference(gale);
+        }
     }
 }
 
 void main()
 {
+
+    while (std::find(gale_matches.begin(), gale_matches.end(), false) != gale_matches.end())
+    {
+        for (int i = 0; i < gale_objects.size(); i++)
+        {
+            gale_shapley(i);
+        }
+    }
+    for (bool i : gale_matches)
+        std::cout << i << ' ' << std::endl;
+
+    for (std::string i : shapley_matches)
+        std::cout << i << ' ' << std::endl;
 }
